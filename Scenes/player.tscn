@@ -1,0 +1,58 @@
+[gd_scene load_steps=4 format=3 uid="uid://ch8vjmct54i7e"]
+
+[ext_resource type="Script" uid="uid://kgg66j02xhub" path="res://Scripts/player.gd" id="1_cvnsp"]
+[ext_resource type="Texture2D" uid="uid://cijx17t6btaeq" path="res://Assets/BattleCity2.png" id="1_v0iea"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
+size = Vector2(16, 16)
+
+[node name="Player" type="Area2D"]
+script = ExtResource("1_cvnsp")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_v0iea")
+region_enabled = true
+region_rect = Rect2(1, 2, 13, 13)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_cvnsp")
+
+[node name="RayCasts" type="Node2D" parent="."]
+
+[node name="Front" type="Node2D" parent="RayCasts"]
+
+[node name="CenterRayCast" type="RayCast2D" parent="RayCasts/Front"]
+target_position = Vector2(0, -8)
+collision_mask = 2
+
+[node name="LeftRayCast" type="RayCast2D" parent="RayCasts/Front"]
+position = Vector2(-6, 0)
+target_position = Vector2(0, -8)
+collision_mask = 2
+
+[node name="RightRayCast" type="RayCast2D" parent="RayCasts/Front"]
+position = Vector2(6, 0)
+target_position = Vector2(0, -8)
+collision_mask = 2
+
+[node name="Left" type="Node2D" parent="RayCasts"]
+
+[node name="LeftSideEndRayCast" type="RayCast2D" parent="RayCasts/Left"]
+position = Vector2(-3, 7)
+target_position = Vector2(-5, 0)
+collision_mask = 2
+
+[node name="LeftSideStartRayCast" type="RayCast2D" parent="RayCasts/Left"]
+position = Vector2(-3, -7)
+target_position = Vector2(-5, 0)
+collision_mask = 2
+
+[node name="Right" type="Node2D" parent="RayCasts"]
+
+[node name="RightSideEndRayCast" type="RayCast2D" parent="RayCasts/Right"]
+position = Vector2(3, 7)
+target_position = Vector2(5, 0)
+
+[node name="RightSideStartRayCast" type="RayCast2D" parent="RayCasts/Right"]
+position = Vector2(3, -7)
+target_position = Vector2(5, 0)
