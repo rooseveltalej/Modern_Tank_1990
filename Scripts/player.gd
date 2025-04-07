@@ -4,6 +4,7 @@ extends Area2D
 const TILE_SIZE = 8
 @export var speed: float = 25.0
 @export var enable_snapping: bool = true
+@onready var tank_rotator: TankRotator = $TankRotator
 
 @onready var sprite_2d: Sprite2D = $Sprite2D
 
@@ -36,7 +37,7 @@ func _physics_process(delta: float) -> void:
 	if input_vector == Vector2.ZERO:
 		return
 	
-	update_tank_rotation(input_vector)
+	tank_rotator.update_tank_rotation(input_vector)
 	
 	var is_front_colliding = front_raycasts.any(is_raycast_collding)
 	
@@ -77,15 +78,7 @@ func apply_snapping(input_vector: Vector2, is_front_colliding: bool, is_side_col
 	elif input_vector.x != 0 && !is_front_colliding && is_side_colliding:
 		position = position.snapped( Vector2(0,TILE_SIZE ))
 
-func update_tank_rotation(input_vector: Vector2) -> void:
-	if input_vector == Vector2.RIGHT:
-		rotation = PI/2
-	elif input_vector == Vector2.DOWN:
-		rotation = PI
-	elif  input_vector == Vector2.LEFT:
-		rotation = -PI/2
-	elif input_vector == Vector2.UP:
-		rotation = 0
+
 
 func is_raycast_collding(raycast: RayCast2D):
 	return raycast.is_colliding()

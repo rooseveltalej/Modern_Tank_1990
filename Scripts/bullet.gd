@@ -29,6 +29,7 @@ func _process(delta: float) -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if body is TileMapLayer:
 		handle_tilemap_layer_collision(body)
+		
 
 
 func handle_tilemap_layer_collision(tile_map_layer: TileMapLayer):
@@ -51,3 +52,9 @@ func check_bullet_collision_for_corner(corner: Vector2, tile_map_layer: TileMapL
 	
 	tile_map_layer.set_cell(tile_position, -1, Vector2i(-1, -1))
 	
+
+
+func _on_area_entered(area: Area2D) -> void:
+	if area is Enemy:
+		(area as Enemy).explode()
+		queue_free()

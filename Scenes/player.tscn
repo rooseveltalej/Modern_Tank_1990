@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://ch8vjmct54i7e"]
+[gd_scene load_steps=6 format=3 uid="uid://ch8vjmct54i7e"]
 
 [ext_resource type="Script" uid="uid://kgg66j02xhub" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://cijx17t6btaeq" path="res://Assets/BattleCity2.png" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://csmte3jt7rrxk" path="res://Scripts/shooting_system.gd" id="3_6t5aa"]
+[ext_resource type="PackedScene" uid="uid://culjdlu03p6f" path="res://Scenes/tank_rotator.tscn" id="4_vgqql"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
 size = Vector2(16, 16)
@@ -63,3 +64,5 @@ target_position = Vector2(5, 0)
 [node name="ShootingSystem" type="Marker2D" parent="."]
 position = Vector2(0, -5.5)
 script = ExtResource("3_6t5aa")
+
+[node name="TankRotator" parent="." instance=ExtResource("4_vgqql")]
