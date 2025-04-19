@@ -18,5 +18,6 @@ func spawn_projectile() -> void:
 	if get_parent().previous_direction != Vector2.ZERO:
 		bullet.direction = get_parent().previous_direction
 	
+	bullet.speed = 100
 	get_tree().root.add_child(bullet)
 	bullet.bullet_destroyed.connect(func(): can_shoot = true)

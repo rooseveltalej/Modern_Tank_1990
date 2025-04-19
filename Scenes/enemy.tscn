@@ -1,13 +1,47 @@
-[gd_scene load_steps=37 format=3 uid="uid://kmngagg05mhp"]
+[gd_scene load_steps=47 format=3 uid="uid://kmngagg05mhp"]
 
 [ext_resource type="Script" uid="uid://c1b74ndcmau5c" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Script" uid="uid://dahmlmq74tamj" path="res://Scripts/tank_rotator.gd" id="1_hghv2"]
+[ext_resource type="Texture2D" uid="uid://b21nkraxmowf6" path="res://Assets/BattleCity5.png" id="3_1dp5w"]
 [ext_resource type="Texture2D" uid="uid://cijx17t6btaeq" path="res://Assets/BattleCity2.png" id="3_afpow"]
 [ext_resource type="Texture2D" uid="uid://ducbm0w0l3mns" path="res://Assets/FX/ExplosionFX.png" id="4_287tu"]
 [ext_resource type="Texture2D" uid="uid://ceqcsyytidvnt" path="res://Assets/FX/SpawnFX.png" id="5_0830c"]
+[ext_resource type="Script" uid="uid://cfldcv177ligg" path="res://Scripts/enemy_shooting_system.gd" id="6_ghaa6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_afpow"]
 size = Vector2(16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ve8xs"]
+atlas = ExtResource("3_1dp5w")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q0iv8"]
+atlas = ExtResource("3_1dp5w")
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c1gwg"]
+atlas = ExtResource("3_1dp5w")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3mxp7"]
+atlas = ExtResource("3_1dp5w")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5a56t"]
+atlas = ExtResource("3_1dp5w")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a6sir"]
+atlas = ExtResource("3_1dp5w")
+region = Rect2(16, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ej4m"]
+atlas = ExtResource("3_1dp5w")
+region = Rect2(0, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bwheg"]
+atlas = ExtResource("3_1dp5w")
+region = Rect2(16, 32, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nxecp"]
 atlas = ExtResource("3_afpow")
@@ -129,6 +163,50 @@ region = Rect2(768, 320, 64, 64)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_ve8xs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q0iv8")
+}],
+"loop": true,
+"name": &"Armor",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c1gwg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3mxp7")
+}],
+"loop": true,
+"name": &"Basic",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5a56t")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a6sir")
+}],
+"loop": true,
+"name": &"Fast",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8ej4m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bwheg")
+}],
+"loop": true,
+"name": &"Power",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_nxecp")
 }, {
 "duration": 1.0,
@@ -245,12 +323,19 @@ shape = SubResource("RectangleShape2D_afpow")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.25, 0.25)
 sprite_frames = SubResource("SpriteFrames_ghaa6")
+animation = &"Armor"
 autoplay = "spawn"
-frame_progress = 0.700724
 
 [node name="RayCast2D" type="RayCast2D" parent="."]
 target_position = Vector2(0, -8)
 collision_mask = 10
 collide_with_areas = true
 
+[node name="EnemyShootingSystem" type="Marker2D" parent="."]
+position = Vector2(0, -1.8)
+script = ExtResource("6_ghaa6")
+
+[node name="ShootTimer" type="Timer" parent="EnemyShootingSystem"]
+
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="EnemyShootingSystem/ShootTimer" to="EnemyShootingSystem" method="_on_shoot_timer_timeout"]

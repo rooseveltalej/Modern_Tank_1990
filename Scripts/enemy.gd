@@ -2,13 +2,16 @@ extends Area2D
 
 class_name Enemy
 
+@export var tank_type: TankType
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @onready var ray_cast_2d: RayCast2D = $RayCast2D
 @onready var tank_rotator: TankRotator = $TankRotator
+@onready var enemy_shooting_system: EnemyShootingSystem = $EnemyShootingSystem
 
 var is_spawned = false
-
+var health: int = 1
+var points = 100
 var speed = 50
 var movement_direction: Vector2 = Vector2.ZERO
 var move_timer = 1.0
@@ -24,6 +27,12 @@ var directions = [
 
 func _ready() -> void:
 	tile_map_layer = get_tree().get_first_node_in_group("tilemap_layer")
+	speed = tank_type.speed
+	health = tank_type.health
+	points = tank_type.points
+	enemy_shooting_system.bullet_speed = tank_type.bullet_speed
+	enemy_shooting_system.min_shoot_interval = tank_type.min_shoot_interval
+	enemy_shooting_system.max_shoot_interval = tank_type.max_shoot_interval
 	set_random_direction()
 	
 func set_random_direction():
@@ -68,12 +77,17 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite_2d.animation == "spawn":
 		is_spawned = true
 		animated_sprite_2d.scale = Vector2(1,1)
-		animated_sprite_2d.play("default")
+		animated_sprite_2d.play(tank_type.tank_name)
 	if animated_sprite_2d.animation == "explosion":
 		queue_free()
 
+func hit():
+	health -= 1
+	if health == 0:
+		explode()
 
 func explode():
+	enemy_shooting_system.disable()
 	speed = 0
 	collision_shape_2d.set_deferred("disabled", true)
 	animated_sprite_2d.scale = Vector2(0.25, 0.25)

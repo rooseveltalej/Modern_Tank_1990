@@ -56,5 +56,8 @@ func check_bullet_collision_for_corner(corner: Vector2, tile_map_layer: TileMapL
 
 func _on_area_entered(area: Area2D) -> void:
 	if area is Enemy:
-		(area as Enemy).explode()
+		(area as Enemy).hit()
+		queue_free()
+	if (area is Player):
+		(area as Player).explode()
 		queue_free()

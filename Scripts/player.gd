@@ -1,12 +1,14 @@
 extends Area2D
 
+class_name Player
 
 const TILE_SIZE = 8
 @export var speed: float = 25.0
 @export var enable_snapping: bool = true
 @onready var tank_rotator: TankRotator = $TankRotator
+@onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
+@export var color: Color = Color.GOLD
 
-@onready var sprite_2d: Sprite2D = $Sprite2D
 
 @onready var front_raycasts: Array[RayCast2D] = [
 	$RayCasts/Front/CenterRayCast,
@@ -28,13 +30,14 @@ var velocity = Vector2.ZERO
 var previous_direction = Vector2.ZERO
 
 func _ready() -> void:
-	print_debug(front_raycasts)
+	animated_sprite_2d.modulate = color
 
 
 func _physics_process(delta: float) -> void:
 	var input_vector = get_input()
 	
 	if input_vector == Vector2.ZERO:
+		animated_sprite_2d.set_frame_and_progress(0,0)
 		return
 	
 	tank_rotator.update_tank_rotation(input_vector)
@@ -78,7 +81,21 @@ func apply_snapping(input_vector: Vector2, is_front_colliding: bool, is_side_col
 	elif input_vector.x != 0 && !is_front_colliding && is_side_colliding:
 		position = position.snapped( Vector2(0,TILE_SIZE ))
 
-
-
 func is_raycast_collding(raycast: RayCast2D):
 	return raycast.is_colliding()
+
+func explode():
+	speed = 0
+	set_physics_process(false)
+	set_process_input(false)
+	animated_sprite_2d.scale = Vector2(0.25, 0.25)
+	animated_sprite_2d.play("explode")
+
+func _on_animated_sprite_2d_animation_finished() -> void:
+	if animated_sprite_2d.animation == "explode":
+		queue_free()
+		
+
+func _on_area_entered(area: Area2D) -> void:
+	if (area is Enemy):
+		explode()

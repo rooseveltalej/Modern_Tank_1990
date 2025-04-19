@@ -18,6 +18,22 @@ var enemy_spawn_index = 0
 
 @onready var spawn_timer: Timer = $SpawnTimer
 
+@onready var tank_types = {
+	"Basic": preload("res://Resources/BasicTank.tres"),
+	"Fast": preload("res://Resources/FastTank.tres"),
+	"Power": preload("res://Resources/PowerTank.tres"),
+	"Armor": preload("res://Resources/ArmorTank.tres")
+}
+
+const enemy_array = [
+	"Armor", "Power", "Basic", "Basic",
+	"Basic", "Basic", "Basic", "Basic",
+	"Basic", "Basic", "Basic", "Fast",
+	"Basic", "Basic", "Fast", "Power",
+	"Fast", "Power", "Power", "Basic"
+]
+
+
 func _ready() -> void:
 	spawn_timer.wait_time = SPAWN_DELAY
 	spawn_timer.timeout.connect(spawn_enemy)
@@ -35,6 +51,8 @@ func spawn_enemy():
 	
 	var enemy = ENEMY_SCENE.instantiate()
 	enemy.position = random_spawn_point.position
+	var tank_type = tank_types[enemy_array[enemy_spawn_index]]
+	enemy.tank_type = tank_type
 	
 	if not is_inside_tree():
 		return

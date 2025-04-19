@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=4 uid="uid://e4jft171ridq"]
+[gd_scene load_steps=7 format=4 uid="uid://e4jft171ridq"]
 
 [ext_resource type="Texture2D" uid="uid://cijx17t6btaeq" path="res://Assets/BattleCity2.png" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://ch8vjmct54i7e" path="res://Scenes/player.tscn" id="2_bo1nx"]
 [ext_resource type="Script" uid="uid://bcsy3tdh1o71l" path="res://Scripts/enemy_spawner.gd" id="3_8gbba"]
+[ext_resource type="PackedScene" uid="uid://ccjrxfkillirw" path="res://Scenes/eagle.tscn" id="4_jjvhh"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bo1nx"]
 texture = ExtResource("1_jjgbg")
@@ -103,7 +104,7 @@ sources/0 = SubResource("TileSetAtlasSource_bo1nx")
 [node name="main" type="Node"]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(3, 3)
+zoom = Vector2(2.5, 2.5)
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." groups=["tilemap_layer"]]
 position = Vector2(8, 0)
@@ -130,3 +131,6 @@ position = Vector2(96, -96)
 [node name="SpawnTimer" type="Timer" parent="EnemySpawner"]
 one_shot = true
 autostart = true
+
+[node name="Eagle" parent="." instance=ExtResource("4_jjvhh")]
+position = Vector2(0, 97)
