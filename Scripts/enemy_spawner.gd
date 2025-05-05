@@ -1,5 +1,6 @@
 extends Node2D
 
+
 const TOTAL_ENEMIES_PER_LEVEL = 20
 const MAX_ENEMIES_ON_SCREEN = 4
 const SPAWN_DELAY = 2.0
@@ -70,6 +71,7 @@ func spawn_enemy():
 	
 func on_enemy_destroyed():
 	current_enemies -= 1
+	GameManager.enemy_destroyed()
 	if enemies_remaining > 0 and current_enemies < MAX_ENEMIES_ON_SCREEN:
 		spawn_enemy()
 	elif enemies_remaining > 0:

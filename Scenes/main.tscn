@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=4 uid="uid://e4jft171ridq"]
+[gd_scene load_steps=8 format=4 uid="uid://e4jft171ridq"]
 
 [ext_resource type="Texture2D" uid="uid://cijx17t6btaeq" path="res://Assets/BattleCity2.png" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://ch8vjmct54i7e" path="res://Scenes/player.tscn" id="2_bo1nx"]
 [ext_resource type="Script" uid="uid://bcsy3tdh1o71l" path="res://Scripts/enemy_spawner.gd" id="3_8gbba"]
+[ext_resource type="PackedScene" uid="uid://cfhbvv1fkrldt" path="res://Scenes/ui.tscn" id="3_kry3j"]
 [ext_resource type="PackedScene" uid="uid://ccjrxfkillirw" path="res://Scenes/eagle.tscn" id="4_jjvhh"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bo1nx"]
@@ -103,6 +104,9 @@ sources/0 = SubResource("TileSetAtlasSource_bo1nx")
 
 [node name="main" type="Node"]
 
+[node name="PlayerRespawnPoint" type="Marker2D" parent="."]
+position = Vector2(-32, 80)
+
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(2.5, 2.5)
 
@@ -113,6 +117,8 @@ tile_set = SubResource("TileSet_8gbba")
 
 [node name="Player" parent="." instance=ExtResource("2_bo1nx")]
 position = Vector2(0, -24)
+
+[node name="UI" parent="." instance=ExtResource("3_kry3j")]
 
 [node name="EnemySpawner" type="Node2D" parent="."]
 script = ExtResource("3_8gbba")

@@ -59,5 +59,6 @@ func _on_area_entered(area: Area2D) -> void:
 		(area as Enemy).hit()
 		queue_free()
 	if (area is Player):
-		(area as Player).explode()
+		if !(area as Player).is_invincible:
+			(area as Player).explode()
 		queue_free()

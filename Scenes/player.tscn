@@ -1,10 +1,11 @@
-[gd_scene load_steps=24 format=3 uid="uid://ch8vjmct54i7e"]
+[gd_scene load_steps=28 format=3 uid="uid://ch8vjmct54i7e"]
 
 [ext_resource type="Script" uid="uid://kgg66j02xhub" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Script" uid="uid://csmte3jt7rrxk" path="res://Scripts/shooting_system.gd" id="3_6t5aa"]
 [ext_resource type="PackedScene" uid="uid://culjdlu03p6f" path="res://Scenes/tank_rotator.tscn" id="4_vgqql"]
 [ext_resource type="Texture2D" uid="uid://b21nkraxmowf6" path="res://Assets/BattleCity5.png" id="5_fkybt"]
 [ext_resource type="Texture2D" uid="uid://ducbm0w0l3mns" path="res://Assets/FX/ExplosionFX.png" id="5_x3wgy"]
+[ext_resource type="Script" uid="uid://gqg1txs3cf2h" path="res://Scripts/invincibility_system.gd" id="6_x3wgy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
 size = Vector2(16, 16)
@@ -134,6 +135,28 @@ animations = [{
 "speed": 15.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_fkybt"]
+atlas = ExtResource("5_fkybt")
+region = Rect2(32, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wpjfl"]
+atlas = ExtResource("5_fkybt")
+region = Rect2(48, 48, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bi64h"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fkybt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wpjfl")
+}],
+"loop": true,
+"name": &"default",
+"speed": 3.0
+}]
+
 [node name="Player" type="Area2D"]
 collision_mask = 10
 script = ExtResource("1_cvnsp")
@@ -192,10 +215,20 @@ script = ExtResource("3_6t5aa")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_8erm5")
-animation = &"explode"
 autoplay = "default"
-frame = 10
-frame_progress = 0.597039
+
+[node name="InvincibilitySystem" type="Node2D" parent="."]
+script = ExtResource("6_x3wgy")
+
+[node name="InvincibilityTimer" type="Timer" parent="InvincibilitySystem"]
+wait_time = 5.0
+one_shot = true
+
+[node name="InvincibilityAnimatedSprite" type="AnimatedSprite2D" parent="InvincibilitySystem"]
+visible = false
+sprite_frames = SubResource("SpriteFrames_bi64h")
+frame_progress = 0.269472
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="InvincibilitySystem/InvincibilityTimer" to="InvincibilitySystem" method="_on_invincibility_timer_timeout"]

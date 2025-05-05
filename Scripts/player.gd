@@ -2,6 +2,10 @@ extends Area2D
 
 class_name Player
 
+@onready var player_respawn_point: Marker2D = $"../PlayerRespawnPoint"
+@onready var invincibility_system: InvincibilitySystem = $InvincibilitySystem
+
+var current_speed = 0
 const TILE_SIZE = 8
 @export var speed: float = 25.0
 @export var enable_snapping: bool = true
@@ -29,8 +33,13 @@ const TILE_SIZE = 8
 var velocity = Vector2.ZERO
 var previous_direction = Vector2.ZERO
 
+var is_invincible:
+	get:
+		return invincibility_system.is_invincible
+
 func _ready() -> void:
 	animated_sprite_2d.modulate = color
+	respawn()
 
 
 func _physics_process(delta: float) -> void:
@@ -47,7 +56,7 @@ func _physics_process(delta: float) -> void:
 	if is_front_colliding:
 		return
 
-	velocity = input_vector * speed * delta
+	velocity = input_vector * current_speed * delta
 	
 	
 	position += velocity
@@ -84,8 +93,17 @@ func apply_snapping(input_vector: Vector2, is_front_colliding: bool, is_side_col
 func is_raycast_collding(raycast: RayCast2D):
 	return raycast.is_colliding()
 
+func respawn():
+	global_position = player_respawn_point.global_position
+	current_speed = speed
+	set_physics_process(true)
+	set_process_input(true)
+	animated_sprite_2d.scale = Vector2(1, 1)
+	animated_sprite_2d.play("default")
+	invincibility_system.start_invincibility()
+
 func explode():
-	speed = 0
+	current_speed = 0
 	set_physics_process(false)
 	set_process_input(false)
 	animated_sprite_2d.scale = Vector2(0.25, 0.25)
@@ -93,9 +111,14 @@ func explode():
 
 func _on_animated_sprite_2d_animation_finished() -> void:
 	if animated_sprite_2d.animation == "explode":
-		queue_free()
+		GameManager.decrease_player_lives()
+		if GameManager.player_lives != 0:
+			respawn()
+		else: 
+			# END THE GAME
+			queue_free()
 		
 
 func _on_area_entered(area: Area2D) -> void:
-	if (area is Enemy):
+	if (area is Enemy && !is_invincible):
 		explode()
