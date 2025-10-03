@@ -1,0 +1,234 @@
+[gd_scene load_steps=28 format=3 uid="uid://ch8vjmct54i7e"]
+
+[ext_resource type="Script" uid="uid://kgg66j02xhub" path="res://Scripts/player.gd" id="1_cvnsp"]
+[ext_resource type="Script" uid="uid://csmte3jt7rrxk" path="res://Scripts/shooting_system.gd" id="3_6t5aa"]
+[ext_resource type="PackedScene" uid="uid://culjdlu03p6f" path="res://Scenes/tank_rotator.tscn" id="4_vgqql"]
+[ext_resource type="Texture2D" uid="uid://b21nkraxmowf6" path="res://Assets/BattleCity5.png" id="5_fkybt"]
+[ext_resource type="Texture2D" uid="uid://ducbm0w0l3mns" path="res://Assets/FX/ExplosionFX.png" id="5_x3wgy"]
+[ext_resource type="Script" uid="uid://gqg1txs3cf2h" path="res://Scripts/invincibility_system.gd" id="6_x3wgy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
+size = Vector2(16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x3wgy"]
+atlas = ExtResource("5_fkybt")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3smsa"]
+atlas = ExtResource("5_fkybt")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8erm5"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(0, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f1ek2"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(64, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tx1dd"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(128, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gymyn"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(192, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pu2lt"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(256, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ukyrk"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(320, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7dp3o"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(384, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h4iuc"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(448, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fd4e3"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(512, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qqcod"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(576, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_igrcy"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(640, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fs7ks"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(704, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l6n3p"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(768, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_olqyp"]
+atlas = ExtResource("5_x3wgy")
+region = Rect2(832, 256, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8erm5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x3wgy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3smsa")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8erm5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f1ek2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tx1dd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gymyn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pu2lt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ukyrk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7dp3o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h4iuc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fd4e3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qqcod")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_igrcy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fs7ks")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l6n3p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_olqyp")
+}],
+"loop": false,
+"name": &"explode",
+"speed": 15.0
+}]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fkybt"]
+atlas = ExtResource("5_fkybt")
+region = Rect2(32, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wpjfl"]
+atlas = ExtResource("5_fkybt")
+region = Rect2(48, 48, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bi64h"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fkybt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wpjfl")
+}],
+"loop": true,
+"name": &"default",
+"speed": 3.0
+}]
+
+[node name="Player" type="Area2D"]
+collision_mask = 10
+script = ExtResource("1_cvnsp")
+speed = 75.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+shape = SubResource("RectangleShape2D_cvnsp")
+
+[node name="RayCasts" type="Node2D" parent="."]
+visible = false
+
+[node name="Front" type="Node2D" parent="RayCasts"]
+
+[node name="CenterRayCast" type="RayCast2D" parent="RayCasts/Front"]
+target_position = Vector2(0, -8)
+collision_mask = 2
+
+[node name="LeftRayCast" type="RayCast2D" parent="RayCasts/Front"]
+position = Vector2(-6, 0)
+target_position = Vector2(0, -8)
+collision_mask = 2
+
+[node name="RightRayCast" type="RayCast2D" parent="RayCasts/Front"]
+position = Vector2(6, 0)
+target_position = Vector2(0, -8)
+collision_mask = 2
+
+[node name="Left" type="Node2D" parent="RayCasts"]
+
+[node name="LeftSideEndRayCast" type="RayCast2D" parent="RayCasts/Left"]
+position = Vector2(-3, 7)
+target_position = Vector2(-5, 0)
+collision_mask = 2
+
+[node name="LeftSideStartRayCast" type="RayCast2D" parent="RayCasts/Left"]
+position = Vector2(-3, -7)
+target_position = Vector2(-5, 0)
+collision_mask = 2
+
+[node name="Right" type="Node2D" parent="RayCasts"]
+
+[node name="RightSideEndRayCast" type="RayCast2D" parent="RayCasts/Right"]
+position = Vector2(3, 7)
+target_position = Vector2(5, 0)
+
+[node name="RightSideStartRayCast" type="RayCast2D" parent="RayCasts/Right"]
+position = Vector2(3, -7)
+target_position = Vector2(5, 0)
+
+[node name="ShootingSystem" type="Marker2D" parent="."]
+position = Vector2(0, -5.5)
+script = ExtResource("3_6t5aa")
+
+[node name="TankRotator" parent="." instance=ExtResource("4_vgqql")]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_8erm5")
+autoplay = "default"
+
+[node name="InvincibilitySystem" type="Node2D" parent="."]
+script = ExtResource("6_x3wgy")
+
+[node name="InvincibilityTimer" type="Timer" parent="InvincibilitySystem"]
+wait_time = 5.0
+one_shot = true
+
+[node name="InvincibilityAnimatedSprite" type="AnimatedSprite2D" parent="InvincibilitySystem"]
+visible = false
+sprite_frames = SubResource("SpriteFrames_bi64h")
+frame_progress = 0.269472
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="InvincibilitySystem/InvincibilityTimer" to="InvincibilitySystem" method="_on_invincibility_timer_timeout"]

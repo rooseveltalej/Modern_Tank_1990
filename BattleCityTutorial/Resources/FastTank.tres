@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="TankType" load_steps=2 format=3 uid="uid://dwagvnteb8drs"]
+
+[ext_resource type="Script" uid="uid://dq4avversjnvt" path="res://Scripts/tank_type.gd" id="1_3cf3q"]
+
+[resource]
+script = ExtResource("1_3cf3q")
+tank_name = "Fast"
+speed = 50.0
+health = 1
+min_shoot_interval = 3.5
+max_shoot_interval = 7.5
+bullet_speed = 125.0
+points = 125

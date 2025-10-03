@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://ccjrxfkillirw"]
+
+[ext_resource type="Texture2D" uid="uid://b21nkraxmowf6" path="res://Assets/BattleCity5.png" id="1_0dq4m"]
+[ext_resource type="Script" uid="uid://c01qgyh5heor3" path="res://Scripts/eagle.gd" id="1_fugfm"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0dq4m"]
+size = Vector2(16, 16)
+
+[node name="Eagle" type="Area2D"]
+collision_layer = 16
+collision_mask = 12
+script = ExtResource("1_fugfm")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -1)
+texture = ExtResource("1_0dq4m")
+region_enabled = true
+region_rect = Rect2(32, 80, 16, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -1)
+shape = SubResource("RectangleShape2D_0dq4m")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]

@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://ce1cypn3n5vk7"]
+
+[ext_resource type="Script" uid="uid://dr5c5qti8t2am" path="res://Scripts/bullet.gd" id="1_oduel"]
+[ext_resource type="Texture2D" uid="uid://cijx17t6btaeq" path="res://Assets/BattleCity2.png" id="1_xjght"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oduel"]
+size = Vector2(3, 4)
+
+[node name="Bullet" type="Area2D"]
+collision_layer = 4
+collision_mask = 10
+script = ExtResource("1_oduel")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_xjght")
+region_enabled = true
+region_rect = Rect2(22, 70, 3, 4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_oduel")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
