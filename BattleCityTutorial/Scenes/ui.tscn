@@ -1,0 +1,89 @@
+[gd_scene load_steps=5 format=3 uid="uid://cfhbvv1fkrldt"]
+
+[ext_resource type="FontFile" uid="uid://deg2678b2066r" path="res://Assets/Font/Minecraft.ttf" id="1_jxero"]
+[ext_resource type="Script" uid="uid://bubif8kbvjwbe" path="res://Scripts/ui.gd" id="1_nf4gj"]
+[ext_resource type="Texture2D" uid="uid://b21nkraxmowf6" path="res://Assets/BattleCity5.png" id="2_qdvrb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nf4gj"]
+atlas = ExtResource("2_qdvrb")
+region = Rect2(48, -1, 16, 16)
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1_nf4gj")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -192.0
+grow_horizontal = 0
+grow_vertical = 2
+color = Color(0.298039, 0.298039, 0.298039, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/MarginContainer"]
+layout_mode = 2
+
+[node name="EnemiesGridContainer" type="GridContainer" parent="ColorRect/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+columns = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ColorRect/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ColorRect/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_jxero")
+theme_override_font_sizes/font_size = 32
+text = "I P"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ColorRect/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="ColorRect/MarginContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+modulate = Color(0.866004, 0, 0.158232, 1)
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+texture = SubResource("AtlasTexture_nf4gj")
+
+[node name="PlayerLivesLabel" type="Label" parent="ColorRect/MarginContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_fonts/font = ExtResource("1_jxero")
+theme_override_font_sizes/font_size = 32
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="ColorRect/MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ScoreLabel" type="Label" parent="ColorRect/MarginContainer/VBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_fonts/font = ExtResource("1_jxero")
+theme_override_font_sizes/font_size = 20
+text = "SCORE: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
