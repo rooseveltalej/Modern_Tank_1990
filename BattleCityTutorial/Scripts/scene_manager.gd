@@ -41,7 +41,14 @@ func _deferred_goto_scene(path: String):
 
 # Funciones específicas para cambiar escenas
 func start_game():
-	# Reiniciar estadísticas del nivel al empezar
+	# Reiniciar todas las estadísticas al empezar un nuevo juego
+	if has_node("/root/GameManager"):
+		var game_manager = get_node("/root/GameManager")
+		game_manager.reset_game_stats()  # Resetea TODO incluyendo vidas
+	goto_scene("res://Scenes/main.tscn")
+
+func continue_to_next_level():
+	# Solo resetear estadísticas del nivel, mantener vidas y puntuación
 	if has_node("/root/GameManager"):
 		var game_manager = get_node("/root/GameManager")
 		game_manager.reset_level_stats()
@@ -49,6 +56,17 @@ func start_game():
 
 func show_main_menu():
 	goto_scene("res://Scenes/main_menu.tscn")
+
+func show_multiplayer_menu():
+	goto_scene("res://Scenes/multiplayer_menu.tscn")
+
+func start_multiplayer_game():
+	# Reiniciar estadísticas para juego multijugador
+	if has_node("/root/GameManager"):
+		var game_manager = get_node("/root/GameManager")
+		game_manager.reset_game_stats()
+		game_manager.is_multiplayer = true
+	goto_scene("res://Scenes/main_multiplayer.tscn")
 
 func show_game_over():
 	goto_scene("res://Scenes/game_over.tscn")

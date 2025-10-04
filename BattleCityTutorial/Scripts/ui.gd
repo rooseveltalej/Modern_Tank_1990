@@ -6,6 +6,10 @@ class_name UI
 @onready var player_lives_label: Label = %PlayerLivesLabel
 @onready var score_label: Label = %ScoreLabel
 
+# Variables para multijugador
+var multiplayer_info_label: Label
+var is_multiplayer_mode: bool = false
+
 const ENEMY_UI_TEXTURE = preload("res://Assets/enemy_ui_texture.tres")
 
 const ENEMIES_PER_LEVEL = 20;
@@ -20,6 +24,9 @@ func _ready() -> void:
 	update_player_lives(GameManager.player_lives)
 	update_score(GameManager.player_score)
 	GameManager.ui = self
+	
+	# Crear label para información multijugador
+	create_multiplayer_info_label()
 
 func update_player_lives(player_lives: int) -> void:
 	player_lives_label.text = str(player_lives)
@@ -32,3 +39,27 @@ func decrease_enemy_display() -> void:
 func update_score(score: int) -> void:
 	if score_label:
 		score_label.text = "SCORE: " + str(score)
+
+func create_multiplayer_info_label():
+	# Crear label para mostrar información multijugador
+	multiplayer_info_label = Label.new()
+	multiplayer_info_label.text = "Esperando jugador..."
+	multiplayer_info_label.position = Vector2(10, 100)
+	multiplayer_info_label.visible = false
+	add_child(multiplayer_info_label)
+
+func show_multiplayer_info(player_connected: bool, player_name: String = ""):
+	is_multiplayer_mode = true
+	multiplayer_info_label.visible = true
+	
+	if player_connected:
+		multiplayer_info_label.text = "Jugador conectado: " + player_name
+		multiplayer_info_label.modulate = Color.GREEN
+	else:
+		multiplayer_info_label.text = "Esperando jugador..."
+		multiplayer_info_label.modulate = Color.YELLOW
+
+func hide_multiplayer_info():
+	is_multiplayer_mode = false
+	if multiplayer_info_label:
+		multiplayer_info_label.visible = false
