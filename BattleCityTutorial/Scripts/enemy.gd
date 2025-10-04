@@ -33,13 +33,24 @@ func _ready() -> void:
 	enemy_shooting_system.bullet_speed = tank_type.bullet_speed
 	enemy_shooting_system.min_shoot_interval = tank_type.min_shoot_interval
 	enemy_shooting_system.max_shoot_interval = tank_type.max_shoot_interval
+	
+	# Esperar un frame para asegurar que el tile_map_layer esté disponible
+	await get_tree().process_frame
 	set_random_direction()
 	
 func set_random_direction():
+	# Asegurar que tile_map_layer esté disponible
+	if tile_map_layer == null:
+		tile_map_layer = get_tree().get_first_node_in_group("tilemap_layer")
+	
 	movement_direction = directions.pick_random()
 	
-	while check_for_tile_in_direction(movement_direction):
-		movement_direction = directions.pick_random()
+	# Solo verificar colisiones si tenemos acceso al tilemap
+	if tile_map_layer != null:
+		var attempts = 0
+		while check_for_tile_in_direction(movement_direction) and attempts < 4:
+			movement_direction = directions.pick_random()
+			attempts += 1
 	
 	tank_rotator.update_tank_rotation(movement_direction)	
 
@@ -63,6 +74,12 @@ func _process(delta: float) -> void:
 			position = position.snapped(Vector2(8, 0))
 
 func check_for_tile_in_direction(movement_direction: Vector2) ->  bool:
+	# Verificar que tile_map_layer no sea null
+	if tile_map_layer == null:
+		tile_map_layer = get_tree().get_first_node_in_group("tilemap_layer")
+		if tile_map_layer == null:
+			return false  # Si aún no hay tilemap, permitir el movimiento
+	
 	var position_to_check = global_position + movement_direction * 8.1
 	
 	var tile_position = tile_map_layer.local_to_map(tile_map_layer.to_local(position_to_check))
