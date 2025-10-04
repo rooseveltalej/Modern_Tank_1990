@@ -102,7 +102,7 @@ custom_data_layer_0/name = "can_be_destroyed"
 custom_data_layer_0/type = 1
 sources/0 = SubResource("TileSetAtlasSource_bo1nx")
 
-[node name="MultiplayerMain" type="Node"]
+[node name="MultiplayerMain" type="Node" groups=["multiplayer_manager"]]
 script = ExtResource("3_mgm")
 
 [node name="Player1RespawnPoint" type="Marker2D" parent="."]

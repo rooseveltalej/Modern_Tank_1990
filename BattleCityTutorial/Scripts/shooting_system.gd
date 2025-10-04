@@ -27,6 +27,13 @@ func spawn_projectile() -> void:
 	
 	bullet.speed = 100
 	
+	# Configurar propiedades de multijugador
+	if is_multiplayer:
+		bullet.is_multiplayer = true
+		bullet.is_from_player = is_local_player
+		if get_parent().has_method("get") and get_parent().player_id:
+			bullet.owner_id = get_parent().player_id
+	
 	# En multijugador, agregar a contenedor específico
 	if is_multiplayer:
 		var bullets_container = get_tree().get_first_node_in_group("multiplayer_bullets")
