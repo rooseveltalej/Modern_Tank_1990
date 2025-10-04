@@ -35,10 +35,22 @@ func setup_players():
 	local_player.is_local_player = true
 	local_player.player_id = player_id
 	
+	# Configurar shooting system del jugador local
+	var local_shooting_system = local_player.get_node_or_null("ShootingSystem")
+	if local_shooting_system:
+		local_shooting_system.is_multiplayer = true
+		local_shooting_system.is_local_player = true
+	
 	# Configurar jugador remoto
 	remote_player.is_multiplayer = true
 	remote_player.is_local_player = false
 	remote_player.visible = false  # Ocultar hasta que se conecte otro jugador
+	
+	# Configurar shooting system del jugador remoto
+	var remote_shooting_system = remote_player.get_node_or_null("ShootingSystem")
+	if remote_shooting_system:
+		remote_shooting_system.is_multiplayer = true
+		remote_shooting_system.is_local_player = false
 	
 	# Conectar señales del jugador local
 	local_player.position_changed.connect(_on_local_player_position_changed)
@@ -46,14 +58,18 @@ func setup_players():
 
 func _on_player_joined(player_id_received: int):
 	print("Jugador conectado: ", player_id_received)
+	print("Mi player_id: ", player_id)
 	
 	# Mostrar jugador remoto
 	if player_id_received != player_id:
 		remote_player.visible = true
 		remote_player.player_id = player_id_received
+		print("Mostrando jugador remoto con ID: ", player_id_received)
 		
 		# Actualizar UI
 		ui.show_multiplayer_info(true, str(player_id_received))
+	else:
+		print("Ignorando mi propio join")
 
 func _on_player_left(player_id_received: int):
 	print("Jugador desconectado: ", player_id_received)
@@ -67,12 +83,20 @@ func _on_player_left(player_id_received: int):
 
 func _on_game_data_received(data: Dictionary):
 	# Procesar diferentes tipos de datos de juego
+	print("Datos recibidos: ", data)
+	
 	if data.has("type"):
 		match data.type:
+			"player_position":
+				_on_position_received(data)
 			"position":
 				_on_position_received(data)
 			"bullet":
 				_on_bullet_fired(data)
+			"player_shoot":
+				_on_bullet_fired(data)
+			"tile_destroyed":
+				_on_tile_destroyed(data)
 			"game_state":
 				_on_game_state_updated(data)
 			_:
@@ -91,10 +115,16 @@ func _on_local_player_bullet_fired(bullet_data: Dictionary):
 
 func _on_position_received(player_data: Dictionary):
 	# Actualizar posición del jugador remoto
-	if player_data.has("player_id") and player_data.player_id != player_id and remote_player.visible:
-		if player_data.has("position") and player_data.has("rotation"):
-			var new_position = Vector2(player_data.position.x, player_data.position.y)
+	print("Procesando posición: ", player_data)
+	
+	if player_data.has("player_id") and player_data.player_id != player_id:
+		if not remote_player.visible:
+			remote_player.visible = true
+			
+		if player_data.has("x") and player_data.has("y") and player_data.has("rotation"):
+			var new_position = Vector2(player_data.x, player_data.y)
 			remote_player.update_remote_position(new_position, player_data.rotation)
+			print("Actualizando posición remota a: ", new_position, " rotación: ", player_data.rotation)
 
 func _on_bullet_fired(bullet_data: Dictionary):
 	# Crear bala de jugador remoto
@@ -125,6 +155,25 @@ func _on_game_state_updated(game_data: Dictionary):
 	
 	if game_data.has("score"):
 		GameManager.score = game_data.score
+
+func _on_tile_destroyed(tile_data: Dictionary):
+	# Sincronizar destrucción de tiles entre jugadores
+	if tile_data.has("tile_x") and tile_data.has("tile_y"):
+		var tilemap_layer = get_tree().get_first_node_in_group("tilemap_layer")
+		if tilemap_layer:
+			var tile_pos = Vector2i(tile_data.tile_x, tile_data.tile_y)
+			tilemap_layer.set_cell(tile_pos, -1, Vector2i(-1, -1))
+			print("Tile destruido remotamente en: ", tile_pos)
+
+func send_tile_destroyed(tile_x: int, tile_y: int):
+	# Enviar destrucción de tile al servidor
+	var tile_data = {
+		"type": "tile_destroyed",
+		"tile_x": tile_x,
+		"tile_y": tile_y,
+		"player_id": player_id
+	}
+	NetworkManager.send_data(tile_data)
 
 func _on_eagle_destroyed():
 	# Manejar destrucción del águila en multijugador

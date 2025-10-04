@@ -57,6 +57,12 @@ func check_bullet_collision_for_corner(corner: Vector2, tile_map_layer: TileMapL
 	
 	tile_map_layer.set_cell(tile_position, -1, Vector2i(-1, -1))
 	
+	# Sincronizar destrucción en multijugador
+	if is_multiplayer and is_from_player:
+		var multiplayer_manager = get_tree().get_first_node_in_group("multiplayer_manager")
+		if multiplayer_manager:
+			multiplayer_manager.send_tile_destroyed(tile_position.x, tile_position.y)
+	
 
 
 func _on_area_entered(area: Area2D) -> void:
