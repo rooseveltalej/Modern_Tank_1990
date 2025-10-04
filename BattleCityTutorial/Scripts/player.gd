@@ -2,7 +2,7 @@ extends Area2D
 
 class_name Player
 
-@onready var player_respawn_point: Marker2D = $"../PlayerRespawnPoint"
+@onready var player_respawn_point: Marker2D = get_respawn_point()
 @onready var invincibility_system: InvincibilitySystem = $InvincibilitySystem
 
 var current_speed = 0
@@ -12,6 +12,17 @@ const TILE_SIZE = 8
 @onready var tank_rotator: TankRotator = $TankRotator
 @onready var animated_sprite_2d: AnimatedSprite2D = $AnimatedSprite2D
 @export var color: Color = Color.GOLD
+
+# Variables para multijugador
+var is_multiplayer: bool = false
+var is_local_player: bool = true
+var player_id: int = 1
+var last_sent_position: Vector2
+var last_sent_rotation: float
+
+# Señales para multijugador
+signal position_changed(position: Vector2, rotation: float)
+signal bullet_fired(bullet_data: Dictionary)
 
 
 @onready var front_raycasts: Array[RayCast2D] = [
@@ -41,8 +52,40 @@ func _ready() -> void:
 	animated_sprite_2d.modulate = color
 	respawn()
 
+func get_respawn_point() -> Marker2D:
+	# Intentar encontrar el punto de respawn correcto según el contexto
+	var parent = get_parent()
+	
+	# Para modo multijugador
+	if is_multiplayer:
+		if is_local_player:
+			# Jugador local usa Player1RespawnPoint
+			var player1_respawn = parent.get_node_or_null("Player1RespawnPoint")
+			if player1_respawn:
+				return player1_respawn
+		else:
+			# Jugador remoto usa Player2RespawnPoint
+			var player2_respawn = parent.get_node_or_null("Player2RespawnPoint")
+			if player2_respawn:
+				return player2_respawn
+	
+	# Para modo single player o fallback
+	var single_respawn = parent.get_node_or_null("PlayerRespawnPoint")
+	if single_respawn:
+		return single_respawn
+	
+	# Fallback: usar la posición actual del jugador
+	var fallback_marker = Marker2D.new()
+	fallback_marker.global_position = global_position
+	parent.add_child.call_deferred(fallback_marker)
+	return fallback_marker
+
 
 func _physics_process(delta: float) -> void:
+	# Solo procesar input si es el jugador local
+	if is_multiplayer and !is_local_player:
+		return
+	
 	var input_vector = get_input()
 	
 	if input_vector == Vector2.ZERO:
@@ -58,10 +101,13 @@ func _physics_process(delta: float) -> void:
 
 	velocity = input_vector * current_speed * delta
 	
-	
 	position += velocity
 	
 	previous_direction = input_vector
+	
+	# Enviar posición en multijugador
+	if is_multiplayer and is_local_player:
+		send_position_update()
 	
 	if enable_snapping:
 		var is_left_side_colliding = left_raycasts.any(is_raycast_collding)
@@ -70,6 +116,9 @@ func _physics_process(delta: float) -> void:
 
 
 func get_input() -> Vector2:
+	# Solo procesar input si es el jugador local
+	if is_multiplayer and !is_local_player:
+		return Vector2.ZERO
 
 	if Input.is_action_pressed("right"):
 		return Vector2.RIGHT
@@ -94,7 +143,16 @@ func is_raycast_collding(raycast: RayCast2D):
 	return raycast.is_colliding()
 
 func respawn():
-	global_position = player_respawn_point.global_position
+	# Verificar que tenemos un punto de respawn válido
+	if not player_respawn_point:
+		player_respawn_point = get_respawn_point()
+	
+	if player_respawn_point:
+		global_position = player_respawn_point.global_position
+	else:
+		# Fallback: mantener posición actual
+		print("Warning: No respawn point found for player")
+	
 	current_speed = speed
 	set_physics_process(true)
 	set_process_input(true)
@@ -122,3 +180,41 @@ func _on_animated_sprite_2d_animation_finished() -> void:
 func _on_area_entered(area: Area2D) -> void:
 	if (area is Enemy && !is_invincible):
 		explode()
+
+# Funciones para multijugador
+func send_position_update():
+	if position.distance_to(last_sent_position) > 1.0 or abs(rotation - last_sent_rotation) > 0.1:
+		last_sent_position = position
+		last_sent_rotation = rotation
+		position_changed.emit(position, rotation)
+
+func update_remote_position(new_position: Vector2, new_rotation: float):
+	# Actualizar posición del jugador remoto suavemente
+	var tween = create_tween()
+	tween.parallel().tween_property(self, "position", new_position, 0.1)
+	tween.parallel().tween_property(self, "rotation", new_rotation, 0.1)
+
+func fire_bullet():
+	# Solo disparar si es el jugador local
+	if is_multiplayer and !is_local_player:
+		return
+		
+	# Obtener datos de la bala
+	var bullet_data = {
+		"position": {"x": position.x, "y": position.y},
+		"rotation": rotation,
+		"direction": {"x": previous_direction.x, "y": previous_direction.y},
+		"is_from_player": true,
+		"player_id": player_id
+	}
+	
+	# Emitir señal para crear bala local y enviar por red
+	bullet_fired.emit(bullet_data)
+
+func _input(event):
+	# Solo procesar disparo si es el jugador local
+	if is_multiplayer and !is_local_player:
+		return
+		
+	if event.is_action_pressed("shoot"):
+		fire_bullet()

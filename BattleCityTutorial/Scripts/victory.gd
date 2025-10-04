@@ -45,7 +45,7 @@ func _on_continue_button_pressed():
 	# Incrementar nivel y continuar
 	var game_manager = get_node("/root/GameManager")
 	game_manager.stage_number += 1
-	get_node("/root/SceneManager").start_game()
+	get_node("/root/SceneManager").continue_to_next_level()
 
 func _on_menu_button_pressed():
 	get_node("/root/SceneManager").show_main_menu()

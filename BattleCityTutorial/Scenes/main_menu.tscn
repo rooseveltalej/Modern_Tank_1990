@@ -58,7 +58,14 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/font = ExtResource("2_m7n4v")
 theme_override_font_sizes/font_size = 24
-text = "INICIAR JUEGO"
+text = "JUEGO INDIVIDUAL"
+
+[node name="MultiplayerButton" type="Button" parent="VBoxContainer/ButtonContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_m7n4v")
+theme_override_font_sizes/font_size = 24
+text = "MULTIJUGADOR"
 
 [node name="SettingsButton" type="Button" parent="VBoxContainer/ButtonContainer"]
 unique_name_in_owner = true

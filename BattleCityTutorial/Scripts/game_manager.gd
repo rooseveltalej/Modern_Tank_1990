@@ -5,6 +5,9 @@ var ui: UI
 @export 
 var player_lives: int = 3
 
+# Nueva variable para modo multijugador
+var is_multiplayer: bool = false
+
 @export_group("Tank points")
 @export var small_tank_points = 100
 @export var fast_tank_points = 200
@@ -114,4 +117,5 @@ func reset_game_stats():
 	big_tank_destroyed = 0
 	armored_tank_destroyed = 0
 	total_enemies_destroyed = 0
+	is_multiplayer = false
 	print("Game stats reset")

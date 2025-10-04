@@ -8,6 +8,11 @@ signal bullet_destroyed
 
 var direction = Vector2.UP
 
+# Variables para multijugador
+var is_multiplayer: bool = false
+var is_from_player: bool = true
+var owner_id: int = 1
+
 const LEFT_CORNER_POSITION = Vector2(-1.5, -2)
 const RIGHT_CORNER_POSITION = Vector2(1.5, -2)
 
