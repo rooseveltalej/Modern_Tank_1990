@@ -30,10 +30,13 @@ func _ready():
 	camera.make_current()
 
 func setup_players():
+	print("Configurando jugadores - Mi ID: ", player_id)
+	
 	# Configurar jugador local
 	local_player.is_multiplayer = true
 	local_player.is_local_player = true
 	local_player.player_id = player_id
+	print("Jugador local configurado - ID: ", local_player.player_id, " es_local: ", local_player.is_local_player)
 	
 	# Configurar shooting system del jugador local
 	var local_shooting_system = local_player.get_node_or_null("ShootingSystem")
@@ -45,6 +48,7 @@ func setup_players():
 	remote_player.is_multiplayer = true
 	remote_player.is_local_player = false
 	remote_player.visible = false  # Ocultar hasta que se conecte otro jugador
+	print("Jugador remoto configurado - es_local: ", remote_player.is_local_player, " visible: ", remote_player.visible)
 	
 	# Configurar shooting system del jugador remoto
 	var remote_shooting_system = remote_player.get_node_or_null("ShootingSystem")
@@ -55,6 +59,7 @@ func setup_players():
 	# Conectar señales del jugador local
 	local_player.position_changed.connect(_on_local_player_position_changed)
 	local_player.bullet_fired.connect(_on_local_player_bullet_fired)
+	print("Señales conectadas para jugador local")
 
 func _on_player_joined(player_id_received: int):
 	print("Jugador conectado: ", player_id_received)
@@ -104,6 +109,7 @@ func _on_game_data_received(data: Dictionary):
 
 func _on_local_player_position_changed(position: Vector2, rotation: float):
 	# Enviar posición al servidor
+	print("Recibida señal de posición local: ", position, " rotación: ", rotation)
 	NetworkManager.send_player_position(position, rotation)
 
 func _on_local_player_bullet_fired(bullet_data: Dictionary):

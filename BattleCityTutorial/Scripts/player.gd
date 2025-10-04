@@ -50,6 +50,11 @@ var is_invincible:
 
 func _ready() -> void:
 	animated_sprite_2d.modulate = color
+	
+	# Inicializar variables de multijugador
+	last_sent_position = position
+	last_sent_rotation = rotation
+	
 	respawn()
 
 func get_respawn_point() -> Marker2D:
@@ -186,10 +191,12 @@ func send_position_update():
 	if position.distance_to(last_sent_position) > 1.0 or abs(rotation - last_sent_rotation) > 0.1:
 		last_sent_position = position
 		last_sent_rotation = rotation
+		print("Enviando posición: ", position, " rotación: ", rotation, " player_id: ", player_id)
 		position_changed.emit(position, rotation)
 
 func update_remote_position(new_position: Vector2, new_rotation: float):
 	# Actualizar posición del jugador remoto suavemente
+	print("Actualizando posición remota de ", player_id, " a: ", new_position, " rotación: ", new_rotation)
 	var tween = create_tween()
 	tween.parallel().tween_property(self, "position", new_position, 0.1)
 	tween.parallel().tween_property(self, "rotation", new_rotation, 0.1)
