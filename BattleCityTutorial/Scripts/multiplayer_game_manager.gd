@@ -113,11 +113,10 @@ func _on_local_player_position_changed(position: Vector2, rotation: float):
 	NetworkManager.send_player_position(position, rotation)
 
 func _on_local_player_bullet_fired(bullet_data: Dictionary):
-	# Enviar información de bala al servidor
-	if bullet_data.has("position") and bullet_data.has("direction"):
-		var pos = Vector2(bullet_data.position.x, bullet_data.position.y)
-		var dir = Vector2(bullet_data.direction.x, bullet_data.direction.y)
-		NetworkManager.send_player_shoot(pos, dir)
+	# Enviar información completa de la bala al servidor
+	var data_to_send = bullet_data.duplicate()
+	data_to_send["type"] = "player_shoot"
+	NetworkManager.send_data(data_to_send)
 
 func _on_position_received(player_data: Dictionary):
 	# Actualizar posición del jugador remoto
