@@ -100,6 +100,11 @@ func _on_game_data_received(data: Dictionary):
 				_on_bullet_fired(data)
 			"player_shoot":
 				_on_bullet_fired(data)
+			"spawn_bullet":
+				if data.has("data"):
+					_on_bullet_fired(data.data)
+				else:
+					_on_bullet_fired(data)
 			"tile_destroyed":
 				_on_tile_destroyed(data)
 			"game_state":
@@ -138,15 +143,60 @@ func _on_bullet_fired(bullet_data: Dictionary):
 
 func create_remote_bullet(bullet_data: Dictionary):
 	# Crear bala desde el jugador remoto
+	print("Creando bala remota con datos: ", bullet_data)
+	
 	var bullet_scene = preload("res://Scenes/bullet.tscn")
 	var bullet = bullet_scene.instantiate()
 	
-	bullet.position = Vector2(bullet_data.position.x, bullet_data.position.y)
-	bullet.rotation = bullet_data.rotation
-	bullet.direction = Vector2(bullet_data.direction.x, bullet_data.direction.y)
-	bullet.is_from_player = bullet_data.is_from_player
+	# Manejar diferentes formatos de posición
+	var bullet_position: Vector2
+	if bullet_data.has("position"):
+		if typeof(bullet_data.position) == TYPE_VECTOR2:
+			# Ya es Vector2
+			bullet_position = bullet_data.position
+		elif typeof(bullet_data.position) == TYPE_DICTIONARY:
+			# Formato anidado: {"position": {"x": 0, "y": 0}}
+			bullet_position = Vector2(bullet_data.position.x, bullet_data.position.y)
+		else:
+			print("Error: Tipo de posición no reconocido: ", typeof(bullet_data.position))
+			return
+	elif bullet_data.has("x") and bullet_data.has("y"):
+		# Formato directo: {"x": 0, "y": 0}
+		bullet_position = Vector2(bullet_data.x, bullet_data.y)
+	else:
+		print("Error: Formato de posición de bala no reconocido")
+		return
+	
+	bullet.position = bullet_position
+	
+	# Manejar rotación
+	if bullet_data.has("rotation"):
+		bullet.rotation = bullet_data.rotation
+	
+	# Manejar dirección
+	var bullet_direction: Vector2
+	if bullet_data.has("direction"):
+		if typeof(bullet_data.direction) == TYPE_VECTOR2:
+			# Ya es Vector2
+			bullet_direction = bullet_data.direction
+		elif typeof(bullet_data.direction) == TYPE_DICTIONARY:
+			bullet_direction = Vector2(bullet_data.direction.x, bullet_data.direction.y)
+		else:
+			print("Error: Tipo de dirección no reconocido: ", typeof(bullet_data.direction))
+			return
+	elif bullet_data.has("dir_x") and bullet_data.has("dir_y"):
+		# Formato directo con dir_x, dir_y
+		bullet_direction = Vector2(bullet_data.dir_x, bullet_data.dir_y)
+	else:
+		print("Error: Formato de dirección no reconocido")
+		return
+	
+	bullet.direction = bullet_direction
+	
+	# Configurar propiedades
+	bullet.is_from_player = bullet_data.get("is_from_player", true)
 	bullet.is_multiplayer = true
-	bullet.owner_id = bullet_data.player_id
+	bullet.owner_id = bullet_data.get("player_id", 0)
 	
 	bullets_container.add_child(bullet)
 

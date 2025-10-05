@@ -109,15 +109,28 @@ func _handle_player_position(data: Dictionary):
 		game_data_received.emit(data)
 
 func _handle_player_shoot(data: Dictionary):
-	var remote_player_id = data.player_id
+	print("Recibiendo datos de disparo: ", data)
+	var remote_player_id = data.get("player_id", 0)
+	
 	if remote_player_id != player_id:
-		# Crear bala del jugador remoto
-		var bullet_data = {
-			"position": Vector2(data.x, data.y),
-			"direction": Vector2(data.dir_x, data.dir_y),
-			"player_id": remote_player_id
-		}
-		game_data_received.emit({"type": "spawn_bullet", "data": bullet_data})
+		# Verificar que tenemos todos los datos necesarios
+		if data.has("position") and data.has("direction"):
+			# Los datos ya vienen en el formato correcto, solo agregamos el tipo y los pasamos
+			var bullet_data = data.duplicate()
+			if not bullet_data.has("type"):
+				bullet_data["type"] = "player_shoot"
+			game_data_received.emit(bullet_data)
+		elif data.has("x") and data.has("y") and data.has("dir_x") and data.has("dir_y"):
+			# Formato legacy con propiedades separadas
+			var bullet_data = {
+				"position": Vector2(data.x, data.y),
+				"direction": Vector2(data.dir_x, data.dir_y),
+				"player_id": remote_player_id,
+				"type": "player_shoot"
+			}
+			game_data_received.emit(bullet_data)
+		else:
+			print("Error: Datos de disparo incompletos. Datos recibidos: ", data)
 
 func _handle_enemy_position(data: Dictionary):
 	network_enemies[data.enemy_id] = {
