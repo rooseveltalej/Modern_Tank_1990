@@ -106,6 +106,7 @@ func _handle_player_position(data: Dictionary):
 			"rotation": data.rotation,
 			"animation": data.get("animation", "default")
 		}
+		game_data_received.emit(data)
 
 func _handle_player_shoot(data: Dictionary):
 	var remote_player_id = data.player_id
