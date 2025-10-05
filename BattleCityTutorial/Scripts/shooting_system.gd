@@ -33,6 +33,17 @@ func spawn_projectile() -> void:
 		bullet.is_from_player = is_local_player
 		if get_parent().has_method("get") and get_parent().player_id:
 			bullet.owner_id = get_parent().player_id
+		
+		# Notificar al sistema multijugador sobre el disparo
+		if is_local_player and get_parent().has_signal("bullet_fired"):
+			var bullet_data = {
+				"position": {"x": global_position.x, "y": global_position.y},
+				"rotation": get_parent().rotation,
+				"direction": {"x": get_parent().previous_direction.x, "y": get_parent().previous_direction.y},
+				"is_from_player": true,
+				"player_id": get_parent().player_id
+			}
+			get_parent().bullet_fired.emit(bullet_data)
 	
 	# En multijugador, agregar a contenedor específico
 	if is_multiplayer:
