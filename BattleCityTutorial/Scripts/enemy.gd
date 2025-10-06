@@ -57,21 +57,31 @@ func set_random_direction():
 func _process(delta: float) -> void:
 	if !is_spawned:
 		return
-	move_timer -= delta
+
+	# --- LÓGICA DE RED INTEGRADA ---
+
+	# La IA y el movimiento del enemigo solo se ejecutan en el Host.
+	# En un jugador, también se ejecuta con normalidad.
+	if not GameManager.is_multiplayer or NetworkManager.is_host:
+		move_timer -= delta
 	
-	if move_timer <= 0:
-		set_random_direction()
-	move_timer = move_duration
-	position += movement_direction * speed * delta
+		if move_timer <= 0:
+			set_random_direction()
+		move_timer = move_duration
+		position += movement_direction * speed * delta
 	
-	if ray_cast_2d.is_colliding():
-		set_random_direction()
+		if ray_cast_2d.is_colliding():
+			set_random_direction()
 		
-		if movement_direction.x != 0:
-			
-			position = position.snapped(Vector2(0, 8))
-		elif movement_direction.y != 0:
-			position = position.snapped(Vector2(8, 0))
+			if movement_direction.x != 0:
+				position = position.snapped(Vector2(0, 8))
+			elif movement_direction.y != 0:
+				position = position.snapped(Vector2(8, 0))
+
+	# Si es una partida multijugador, el Host debe enviar la posición
+	# a los clientes en cada frame.
+	if GameManager.is_multiplayer and NetworkManager.is_host:
+		NetworkManager.send_enemy_position(name, global_position, rotation)
 
 func check_for_tile_in_direction(movement_direction: Vector2) ->  bool:
 	# Verificar que tile_map_layer no sea null

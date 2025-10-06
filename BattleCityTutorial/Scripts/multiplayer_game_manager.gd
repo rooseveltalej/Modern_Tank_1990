@@ -7,6 +7,7 @@ extends Node
 @onready var ui = $UI
 @onready var bullets_container = $MultiplayerBullets
 @onready var network_players = $NetworkPlayers
+@onready var enemy_spawner = $EnemySpawner
 
 var is_host: bool = false
 var room_code: String = ""
@@ -23,6 +24,18 @@ func _ready():
 	room_code = NetworkManager.room_code
 	player_id = NetworkManager.player_id
 	
+	# --- LÓGICA INTEGRADA PARA ENEMIGOS ---
+	# Activa el generador de enemigos solo si este jugador es el Host.
+	if is_host:
+		print("Soy el host, activando spawner de enemigos.")
+		# Llama a la función para que el spawner comience a funcionar.
+		enemy_spawner.start_spawning()
+	else:
+		print("Soy un cliente, el spawner de enemigos está desactivado.")
+		# Si no es el host, elimina el spawner para que no interfiera.
+		enemy_spawner.queue_free()
+	# ------------------------------------
+
 	# Configurar jugadores
 	setup_players()
 	
@@ -96,8 +109,6 @@ func _on_game_data_received(data: Dictionary):
 				_on_position_received(data)
 			"position":
 				_on_position_received(data)
-			"bullet":
-				_on_bullet_fired(data)
 			"player_shoot":
 				_on_bullet_fired(data)
 			"spawn_bullet":
@@ -109,6 +120,27 @@ func _on_game_data_received(data: Dictionary):
 				_on_tile_destroyed(data)
 			"game_state":
 				_on_game_state_updated(data)
+			
+			# --- LÓGICA INTEGRADA PARA ENEMIGOS ---
+			
+			# Caso 1: Un nuevo enemigo es creado por el Host.
+			"spawn_enemy":
+				# Solo el cliente (quien no es el Host) debe crear el enemigo.
+				if not is_host:
+					_on_enemy_spawned(data)
+			
+			# Caso 2: El Host envía la nueva posición de un enemigo.
+			"enemy_position":
+				 # Solo el cliente debe actualizar la posición del enemigo.
+				if not is_host:
+					# Busca el enemigo por su nombre/ID único.
+					var enemy_node = get_node_or_null(data.enemy_id)
+					if enemy_node:
+						# Actualiza su posición y rotación suavemente.
+						enemy_node.global_position = Vector2(data.x, data.y)
+						enemy_node.rotation = data.rotation
+			# ------------------------------------
+			
 			_:
 				print("Tipo de dato desconocido: ", data.type)
 
@@ -247,3 +279,17 @@ func _exit_tree():
 	# Limpiar cuando se sale de la escena
 	if NetworkManager.is_connected:
 		NetworkManager.disconnect_from_server()
+		
+func _on_enemy_spawned(enemy_data: Dictionary):
+	print("Creando enemigo remoto: ", enemy_data.enemy_id)
+	var enemy_scene = preload("res://Scenes/enemy.tscn")
+	var enemy = enemy_scene.instantiate()
+
+	enemy.name = enemy_data.enemy_id
+	enemy.tank_type = load(enemy_data.tank_type_path)
+	enemy.global_position = Vector2(enemy_data.position.x, enemy_data.position.y)
+
+	# Desactivamos la IA en el cliente, solo seguirá las órdenes del host
+	enemy.set_physics_process(false) 
+
+	add_child(enemy)

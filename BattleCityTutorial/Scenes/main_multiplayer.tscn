@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=4]
+[gd_scene load_steps=9 format=4 uid="uid://fm4n32xfeu62"]
 
 [ext_resource type="Texture2D" uid="uid://cijx17t6btaeq" path="res://Assets/BattleCity2.png" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://ch8vjmct54i7e" path="res://Scenes/player.tscn" id="2_bo1nx"]
-[ext_resource type="Script" path="res://Scripts/multiplayer_game_manager.gd" id="3_mgm"]
 [ext_resource type="PackedScene" uid="uid://cfhbvv1fkrldt" path="res://Scenes/ui.tscn" id="3_kry3j"]
+[ext_resource type="Script" uid="uid://bgnwmi17bau0y" path="res://Scripts/multiplayer_game_manager.gd" id="3_mgm"]
 [ext_resource type="PackedScene" uid="uid://ccjrxfkillirw" path="res://Scenes/eagle.tscn" id="4_jjvhh"]
+[ext_resource type="Script" uid="uid://bcsy3tdh1o71l" path="res://Scripts/enemy_spawner.gd" id="6_wxi80"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bo1nx"]
 texture = ExtResource("1_jjgbg")
@@ -123,8 +124,8 @@ tile_set = SubResource("TileSet_8gbba")
 position = Vector2(-32, 80)
 
 [node name="RemotePlayer" parent="." instance=ExtResource("2_bo1nx")]
-position = Vector2(32, 80)
 modulate = Color(0, 0.8, 1, 1)
+position = Vector2(32, 80)
 
 [node name="UI" parent="." instance=ExtResource("3_kry3j")]
 
@@ -134,3 +135,20 @@ position = Vector2(0, 97)
 [node name="MultiplayerBullets" type="Node2D" parent="." groups=["multiplayer_bullets"]]
 
 [node name="NetworkPlayers" type="Node2D" parent="."]
+
+[node name="EnemySpawner" type="Node2D" parent="."]
+script = ExtResource("6_wxi80")
+
+[node name="SpawnPoints" type="Node2D" parent="EnemySpawner"]
+
+[node name="SpawnLeft" type="Marker2D" parent="EnemySpawner/SpawnPoints"]
+position = Vector2(-96, -96)
+
+[node name="SpawnCenter" type="Marker2D" parent="EnemySpawner/SpawnPoints"]
+position = Vector2(0, -96)
+
+[node name="SpawnRight" type="Marker2D" parent="EnemySpawner/SpawnPoints"]
+position = Vector2(96, -96)
+
+[node name="SpawnTimer" type="Timer" parent="EnemySpawner"]
+one_shot = true

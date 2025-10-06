@@ -1,11 +1,10 @@
-[gd_scene load_steps=9 format=4 uid="uid://e4jft171ridq"]
+[gd_scene load_steps=8 format=4 uid="uid://e4jft171ridq"]
 
 [ext_resource type="Texture2D" uid="uid://cijx17t6btaeq" path="res://Assets/BattleCity2.png" id="1_jjgbg"]
 [ext_resource type="PackedScene" uid="uid://ch8vjmct54i7e" path="res://Scenes/player.tscn" id="2_bo1nx"]
 [ext_resource type="Script" uid="uid://bcsy3tdh1o71l" path="res://Scripts/enemy_spawner.gd" id="3_8gbba"]
 [ext_resource type="PackedScene" uid="uid://cfhbvv1fkrldt" path="res://Scenes/ui.tscn" id="3_kry3j"]
 [ext_resource type="PackedScene" uid="uid://ccjrxfkillirw" path="res://Scenes/eagle.tscn" id="4_jjvhh"]
-[ext_resource type="PackedScene" uid="uid://d4m7x9n6k8p2r" path="res://Scenes/pause_menu.tscn" id="5_m8k9l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bo1nx"]
 texture = ExtResource("1_jjgbg")
@@ -137,7 +136,6 @@ position = Vector2(96, -96)
 
 [node name="SpawnTimer" type="Timer" parent="EnemySpawner"]
 one_shot = true
-autostart = true
 
 [node name="Eagle" parent="." instance=ExtResource("4_jjvhh")]
 position = Vector2(0, 97)
