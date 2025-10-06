@@ -33,36 +33,63 @@ func _ready() -> void:
 	enemy_shooting_system.bullet_speed = tank_type.bullet_speed
 	enemy_shooting_system.min_shoot_interval = tank_type.min_shoot_interval
 	enemy_shooting_system.max_shoot_interval = tank_type.max_shoot_interval
+	
+	# Esperar un frame para asegurar que el tile_map_layer esté disponible
+	await get_tree().process_frame
 	set_random_direction()
 	
 func set_random_direction():
+	# Asegurar que tile_map_layer esté disponible
+	if tile_map_layer == null:
+		tile_map_layer = get_tree().get_first_node_in_group("tilemap_layer")
+	
 	movement_direction = directions.pick_random()
 	
-	while check_for_tile_in_direction(movement_direction):
-		movement_direction = directions.pick_random()
+	# Solo verificar colisiones si tenemos acceso al tilemap
+	if tile_map_layer != null:
+		var attempts = 0
+		while check_for_tile_in_direction(movement_direction) and attempts < 4:
+			movement_direction = directions.pick_random()
+			attempts += 1
 	
 	tank_rotator.update_tank_rotation(movement_direction)	
 
 func _process(delta: float) -> void:
 	if !is_spawned:
 		return
-	move_timer -= delta
+
+	# --- LÓGICA DE RED INTEGRADA ---
+
+	# La IA y el movimiento del enemigo solo se ejecutan en el Host.
+	# En un jugador, también se ejecuta con normalidad.
+	if not GameManager.is_multiplayer or NetworkManager.is_host:
+		move_timer -= delta
 	
-	if move_timer <= 0:
-		set_random_direction()
-	move_timer = move_duration
-	position += movement_direction * speed * delta
+		if move_timer <= 0:
+			set_random_direction()
+		move_timer = move_duration
+		position += movement_direction * speed * delta
 	
-	if ray_cast_2d.is_colliding():
-		set_random_direction()
+		if ray_cast_2d.is_colliding():
+			set_random_direction()
 		
-		if movement_direction.x != 0:
-			
-			position = position.snapped(Vector2(0, 8))
-		elif movement_direction.y != 0:
-			position = position.snapped(Vector2(8, 0))
+			if movement_direction.x != 0:
+				position = position.snapped(Vector2(0, 8))
+			elif movement_direction.y != 0:
+				position = position.snapped(Vector2(8, 0))
+
+	# Si es una partida multijugador, el Host debe enviar la posición
+	# a los clientes en cada frame.
+	if GameManager.is_multiplayer and NetworkManager.is_host:
+		NetworkManager.send_enemy_position(name, global_position, rotation)
 
 func check_for_tile_in_direction(movement_direction: Vector2) ->  bool:
+	# Verificar que tile_map_layer no sea null
+	if tile_map_layer == null:
+		tile_map_layer = get_tree().get_first_node_in_group("tilemap_layer")
+		if tile_map_layer == null:
+			return false  # Si aún no hay tilemap, permitir el movimiento
+	
 	var position_to_check = global_position + movement_direction * 8.1
 	
 	var tile_position = tile_map_layer.local_to_map(tile_map_layer.to_local(position_to_check))
@@ -92,3 +119,6 @@ func explode():
 	collision_shape_2d.set_deferred("disabled", true)
 	animated_sprite_2d.scale = Vector2(0.25, 0.25)
 	animated_sprite_2d.play("explosion")
+	
+	# Notificar al GameManager que un enemigo fue destruido
+	get_node("/root/GameManager").enemy_destroyed(tank_type.tank_name)
