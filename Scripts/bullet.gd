@@ -8,6 +8,11 @@ signal bullet_destroyed
 
 var direction = Vector2.UP
 
+# Variables para multijugador
+var is_multiplayer: bool = false
+var is_from_player: bool = true
+var owner_id: int = 1
+
 const LEFT_CORNER_POSITION = Vector2(-1.5, -2)
 const RIGHT_CORNER_POSITION = Vector2(1.5, -2)
 
@@ -51,6 +56,12 @@ func check_bullet_collision_for_corner(corner: Vector2, tile_map_layer: TileMapL
 		return
 	
 	tile_map_layer.set_cell(tile_position, -1, Vector2i(-1, -1))
+	
+	# Sincronizar destrucción en multijugador
+	if is_multiplayer and is_from_player:
+		var multiplayer_manager = get_tree().get_first_node_in_group("multiplayer_manager")
+		if multiplayer_manager:
+			multiplayer_manager.send_tile_destroyed(tile_position.x, tile_position.y)
 	
 
 

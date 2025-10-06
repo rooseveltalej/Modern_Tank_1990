@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://culjdlu03p6f"]
-
-[ext_resource type="Script" uid="uid://dahmlmq74tamj" path="res://Scripts/tank_rotator.gd" id="1_gdj8x"]
-
-[node name="TankRotator" type="Node"]
-script = ExtResource("1_gdj8x")
